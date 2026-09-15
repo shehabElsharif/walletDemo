@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+*.egg
+.venv/
+venv/
+env/
+htmlcov/
+.coverage
+.coverage.*
+.pytest_cache/
+
+# Backend
+backend/*.db
+backend/*.sqlite3
+backend/.env
+
+# Android
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/.idea/
+android/*.iml
+android/captures/
+android/externalNativeBuild/
+android/.cxx/
+android/.kotlin/
+
+# Signing keys (NEVER commit)
+*.keystore
+*.jks
+
+# APKs
+*.apk
+download/*.apk
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Misc
+*.log
+.env
