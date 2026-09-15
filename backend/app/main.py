@@ -1,7 +1,6 @@
 import logging
 from contextlib import asynccontextmanager
 
-import httpx
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -15,43 +14,10 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name
 log = logging.getLogger(__name__)
 
 
-async def register_with_platform():
-    if not settings.webhook_secret:
-        log.warning("No WEBHOOK_SECRET configured, skipping platform registration")
-        return
-
-    if settings.platform_api_key:
-        log.info("platform_api_key already configured, skipping registration")
-        return
-
-    async with httpx.AsyncClient() as client:
-        resp = await client.post(
-            f"{settings.platform_url}/admin/clients",
-            headers={
-                "x-admin-key": settings.platform_admin_key,
-                "Content-Type": "application/json",
-            },
-            json={
-                "name": "wallet-demo",
-                "webhookUrl": f"http://127.0.0.1:8000/webhooks/payment",
-                "webhookSecret": settings.webhook_secret,
-            },
-        )
-        if resp.status_code == 201:
-            data = resp.json()
-            settings.platform_api_key = data["apiKey"]
-            log.info("registered with payment platform, client_id=%s, apiKey=%s", data["client"]["id"], data["apiKey"])
-        elif resp.status_code == 409:
-            log.warning("already registered — set PLATFORM_API_KEY env var to avoid this warning")
-        else:
-            log.error("failed to register: %s %s", resp.status_code, resp.text)
-
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await init_db()
     log.info("database initialized")
-    await register_with_platform()
     yield
     await close_client()
     log.info("shutdown complete")

@@ -32,6 +32,7 @@ interface WalletApi {
 }
 
 object ApiClient {
+    // Change this to your backend server address
     private var baseUrl: String = "http://100.109.134.3:8000"
 
     fun setBaseUrl(url: String) {

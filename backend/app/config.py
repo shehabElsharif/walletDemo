@@ -8,7 +8,6 @@ class Settings(BaseSettings):
     jwt_expire_minutes: int = 1440
 
     platform_url: str = "http://127.0.0.1:8081"
-    platform_admin_key: str = "change-me-admin-key"
     platform_api_key: str = ""
     webhook_secret: str = ""
 

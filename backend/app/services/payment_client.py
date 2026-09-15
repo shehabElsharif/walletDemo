@@ -24,7 +24,7 @@ async def get_client() -> httpx.AsyncClient:
     if _client is None or _client.is_closed:
         _client = httpx.AsyncClient(
             base_url=settings.platform_url,
-            headers={"x-api-key": settings.webhook_secret},
+            headers={"x-api-key": settings.platform_api_key},
             timeout=15.0,
         )
     return _client

@@ -37,6 +37,8 @@ docker compose up -d
 cd backend
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
+cp .env.example .env
+# Edit .env with your credentials (provided by platform admin)
 .venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
@@ -48,18 +50,29 @@ Open `android/` in Android Studio, build and run on emulator or device.
 
 **Real device:** Change the base URL in `ApiClient.kt` to your server's IP:
 ```kotlin
-private var baseUrl: String = "http://100.109.134.3:8000"
+// Change this to your backend server address
+private var baseUrl: String = "http://YOUR_SERVER_IP:8000"
 ```
 
 ## Configuration
 
-Backend environment (`.env` file in `backend/`):
+Backend environment (`.env` file in `backend/` — copy from `.env.example`):
 ```env
 PLATFORM_URL=http://127.0.0.1:8081
-PLATFORM_ADMIN_KEY=change-me-admin-key
-WEBHOOK_SECRET=your-webhook-secret-here
-JWT_SECRET=your-jwt-secret-here
+PLATFORM_API_KEY=pk_live_...        # Provided by platform admin
+WEBHOOK_SECRET=your-webhook-secret  # Provided by platform admin
+JWT_SECRET=your-jwt-secret
 ```
+
+**Important:** The platform admin creates your client account and provides the `PLATFORM_API_KEY` and `WEBHOOK_SECRET`. You do not register yourself.
+
+## Test Credentials
+
+| Gateway | Phone / Card | OTP / Details |
+|---------|-------------|---------------|
+| **Sadad** | Phone: `0941009864` | OTP sent via SMS — ask the platform admin for the code |
+| **Moamalat** | Card: `6395043165743733` | EXP: `01/27`, CVV: any 3 digits |
+| **Edfali** | Any valid Libyan number | OTP: `1234` |
 
 ## API Endpoints
 
