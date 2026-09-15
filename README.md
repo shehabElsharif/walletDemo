@@ -93,6 +93,82 @@ cd backend
 .venv/bin/python -m pytest tests/ -v
 ```
 
+## Verifying the Setup
+
+### 1. Check server health
+
+```bash
+curl http://127.0.0.1:8000/healthz
+# Expected: {"status":"ok"}
+```
+
+### 2. Register a user
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"username":"testuser","password":"test1234"}'
+# Returns: {"access_token":"eyJ...","token_type":"bearer"}
+```
+
+Save the `access_token` — you'll need it for all subsequent requests.
+
+### 3. Login
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"testuser","password":"test1234"}'
+# Returns same JWT token
+```
+
+### 4. Check wallet balance
+
+```bash
+curl http://127.0.0.1:8000/api/wallet \
+  -H "Authorization: Bearer YOUR_TOKEN"
+# Returns: {"balance":"0.00","balance_minor":0,"currency":"LYD"}
+```
+
+### 5. Test a payment (Edfali example)
+
+**Note:** `edfali` and `sadad` require `msisdn`. `moamalat` does not.
+
+```bash
+# Initiate top-up
+curl -X POST http://127.0.0.1:8000/api/wallet/topup \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"amount":10,"gateway":"edfali","msisdn":"0941009864","gateway_env":"test"}'
+# Returns: {"transaction_id":"...","status":"initiated","message":"OTP sent to your phone"}
+
+# Confirm with OTP (use 1234 for edfali test)
+curl -X POST http://127.0.0.1:8000/api/wallet/topup/confirm \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"transaction_id":"TRANSACTION_ID_HERE","otp":"1234"}'
+```
+
+### 6. Verify wallet updated
+
+Wait a few seconds for the webhook to deliver, then:
+
+```bash
+curl http://127.0.0.1:8000/api/wallet \
+  -H "Authorization: Bearer YOUR_TOKEN"
+# Returns: {"balance":"10.00","balance_minor":1000,"currency":"LYD"}
+```
+
+If the balance updates, the full payment flow is working.
+
+### Gateway-specific notes
+
+| Gateway | Required fields | OTP |
+|---------|----------------|-----|
+| **edfali** | `msisdn` | `1234` (test) |
+| **sadad** | `msisdn` | SMS code — ask platform admin |
+| **moamalat** | none (uses WebView checkout) | N/A |
+
 ## Payment Flow
 
 1. User enters amount and selects gateway in the app
