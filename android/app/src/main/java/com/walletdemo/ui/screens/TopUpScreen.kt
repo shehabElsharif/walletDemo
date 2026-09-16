@@ -234,7 +234,9 @@ fun TopUpScreen(
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
                 )
+            }
 
+            if (gateway == "sadad") {
                 Spacer(modifier = Modifier.height(12.dp))
 
                 OutlinedTextField(
