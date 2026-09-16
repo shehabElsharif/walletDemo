@@ -70,7 +70,7 @@ JWT_SECRET=your-jwt-secret
 
 | Gateway | Phone / Card | OTP / Details |
 |---------|-------------|---------------|
-| **Sadad** | Phone: `0941009864` | OTP sent via SMS — ask the platform admin for the code |
+| **Sadad** | Phone: `0935598513` | OTP sent via SMS — ask the platform admin for the code |
 | **Moamalat** | Card: `6395043165743733` | EXP: `01/27`, CVV: any 3 digits |
 | **Edfali** | Any valid Libyan number | OTP: `1234` |
 
@@ -139,7 +139,7 @@ curl http://127.0.0.1:8000/api/wallet \
 curl -X POST http://127.0.0.1:8000/api/wallet/topup \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"amount":10,"gateway":"edfali","msisdn":"0941009864","gateway_env":"test"}'
+  -d '{"amount":10,"gateway":"edfali","msisdn":"0935598513","gateway_env":"test"}'
 # Returns: {"transaction_id":"...","status":"initiated","message":"OTP sent to your phone"}
 
 # Confirm with OTP (use 1234 for edfali test)
