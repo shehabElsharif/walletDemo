@@ -16,6 +16,8 @@ android {
         versionName = "1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "BACKEND_URL", "\"${project.findProperty("BACKEND_URL") ?: "http://10.0.2.2:8000"}\"")
     }
 
     signingConfigs {
@@ -49,6 +51,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 

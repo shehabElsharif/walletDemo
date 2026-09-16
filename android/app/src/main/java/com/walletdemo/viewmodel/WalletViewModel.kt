@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
+import com.walletdemo.BuildConfig
 import com.walletdemo.data.ApiClient
 import com.walletdemo.data.ConfirmOtpRequest
 import com.walletdemo.data.TokenStore
@@ -56,7 +57,7 @@ class WalletViewModel(application: Application) : AndroidViewModel(application) 
         viewModelScope.launch {
             val token = tokenStore.token.first() ?: return@launch
             authToken = "Bearer $token"
-            wsClient.connect("http://10.0.2.2:8000", token)
+            wsClient.connect(BuildConfig.BACKEND_URL, token)
         }
     }
 
