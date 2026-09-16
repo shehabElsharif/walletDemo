@@ -50,7 +50,7 @@ async def create_transaction(
     gateway_env: str = "test",
 ) -> dict:
     client = await get_client()
-    headers = {"x-api-key": api_key, "Content-Type": "application/json"}
+    headers = {"Content-Type": "application/json"}
 
     body: dict = {
         "userId": user_id,
@@ -81,7 +81,7 @@ async def confirm_transaction(
     otp: str,
 ) -> dict:
     client = await get_client()
-    headers = {"x-api-key": api_key, "Content-Type": "application/json"}
+    headers = {"Content-Type": "application/json"}
 
     resp = await client.post(
         f"/api/v1/transactions/{transaction_id}/confirm",
@@ -91,14 +91,5 @@ async def confirm_transaction(
     if resp.status_code in (400, 409, 422):
         data = resp.json()
         raise GatewayError(resp.status_code, data.get("message", "Transaction declined"), data.get("code"))
-    resp.raise_for_status()
-    return resp.json()
-
-
-async def get_transaction(*, api_key: str, transaction_id: str) -> dict:
-    client = await get_client()
-    headers = {"x-api-key": api_key}
-
-    resp = await client.get(f"/api/v1/transactions/{transaction_id}", headers=headers)
     resp.raise_for_status()
     return resp.json()

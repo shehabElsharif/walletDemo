@@ -56,7 +56,7 @@ class WalletViewModel(application: Application) : AndroidViewModel(application) 
         viewModelScope.launch {
             val token = tokenStore.token.first() ?: return@launch
             authToken = "Bearer $token"
-            wsClient.connect("http://100.109.134.3:8000", token)
+            wsClient.connect("http://10.0.2.2:8000", token)
         }
     }
 

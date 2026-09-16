@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
-from app.database import get_db, async_session
+from app.database import get_db
 from app.schemas import WebhookPayload
 from app.services import wallet_service
 from app.ws_manager import manager

@@ -32,6 +32,7 @@ android/.kotlin/
 # Signing keys (NEVER commit)
 *.keystore
 *.jks
+gradle.properties
 
 # APKs
 *.apk

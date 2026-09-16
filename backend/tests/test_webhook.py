@@ -27,13 +27,13 @@ async def test_webhook_valid_signature(client: AsyncClient):
     secret = "test-webhook-secret"
     payload = {
         "event": "transaction.completed",
-        "transaction_id": "txn-001",
-        "user_id": "1",
+        "transactionId": "txn-001",
+        "userId": "1",
         "amount": "10.00",
-        "amount_minor": 1000,
+        "amountMinor": 1000,
         "currency": "LYD",
         "gateway": "sadad",
-        "merchant_reference": "PPV2-TEST0000000001",
+        "merchantReference": "PPV2-TEST0000000001",
         "timestamp": "2026-01-01T00:00:00Z",
     }
     sig, ts, body = sign_and_body(payload, secret)
@@ -113,13 +113,13 @@ async def test_webhook_failed_event(client: AsyncClient):
     secret = "test-webhook-secret"
     payload = {
         "event": "transaction.failed",
-        "transaction_id": "txn-004",
-        "user_id": "1",
+        "transactionId": "txn-004",
+        "userId": "1",
         "amount": "5.00",
-        "amount_minor": 500,
+        "amountMinor": 500,
         "currency": "LYD",
         "gateway": "edfali",
-        "merchant_reference": "PPV2-TEST0000000003",
+        "merchantReference": "PPV2-TEST0000000003",
         "timestamp": "2026-01-01T00:00:00Z",
     }
     sig, ts, body = sign_and_body(payload, secret)
@@ -142,13 +142,13 @@ async def test_webhook_expired_event(client: AsyncClient):
     secret = "test-webhook-secret"
     payload = {
         "event": "transaction.expired",
-        "transaction_id": "txn-005",
-        "user_id": "1",
+        "transactionId": "txn-005",
+        "userId": "1",
         "amount": "3.00",
-        "amount_minor": 300,
+        "amountMinor": 300,
         "currency": "LYD",
         "gateway": "moamalat",
-        "merchant_reference": "PPV2-TEST0000000004",
+        "merchantReference": "PPV2-TEST0000000004",
         "timestamp": "2026-01-01T00:00:00Z",
     }
     sig, ts, body = sign_and_body(payload, secret)

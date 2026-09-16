@@ -34,12 +34,6 @@ def decode_token(token: str) -> int:
         raise HTTPException(status_code=401, detail="Invalid token")
 
 
-async def get_current_user_id(token: str | None = None) -> int:
-    if not token:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    return decode_token(token)
-
-
 @router.post("/register", response_model=TokenResponse)
 async def register(body: RegisterRequest, db: AsyncSession = Depends(get_db)):
     existing = await db.execute(select(User).where(User.username == body.username))
