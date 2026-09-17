@@ -1,5 +1,7 @@
 package com.walletdemo.ui.screens
 
+import android.os.Handler
+import android.os.Looper
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.compose.BackHandler
@@ -68,21 +70,44 @@ fun TopUpScreen(
         }
         AndroidView(
             factory = { context ->
-                WebView(context).apply {
-                    webViewClient = object : WebViewClient() {
-                        override fun shouldOverrideUrlLoading(view: WebView?, request: android.webkit.WebResourceRequest?): Boolean {
-                            return false
+                val webView = WebView(context)
+                val handler = Handler(Looper.getMainLooper())
+                webView.webViewClient = object : WebViewClient() {
+                    override fun shouldOverrideUrlLoading(view: WebView?, request: android.webkit.WebResourceRequest?): Boolean {
+                        return false
+                    }
+                    override fun onPageFinished(view: WebView?, url: String?) {
+                        super.onPageFinished(view, url)
+                        view?.evaluateJavascript("""
+                          (function checkPayment() {
+                            const status = document.getElementById('status')?.textContent || '';
+                            if (status.includes('Payment successful')) {
+                              Android.paymentDone();
+                            } else {
+                              setTimeout(checkPayment, 1500);
+                            }
+                          })();
+                        """, null)
+                    }
+                }
+                webView.addJavascriptInterface(object : Any() {
+                    @android.webkit.JavascriptInterface
+                    fun paymentDone() {
+                        handler.post {
+                            onClearResult()
+                            onBack()
                         }
                     }
-                    settings.javaScriptEnabled = true
-                    settings.domStorageEnabled = true
-                    settings.mixedContentMode = android.webkit.WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
-                    settings.allowContentAccess = true
-                    settings.databaseEnabled = true
-                    settings.setSupportMultipleWindows(false)
-                    settings.javaScriptCanOpenWindowsAutomatically = true
-                    loadUrl(topupResult.checkoutUrl)
-                }
+                }, "Android")
+                webView.settings.javaScriptEnabled = true
+                webView.settings.domStorageEnabled = true
+                webView.settings.mixedContentMode = android.webkit.WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+                webView.settings.allowContentAccess = true
+                webView.settings.databaseEnabled = true
+                webView.settings.setSupportMultipleWindows(false)
+                webView.settings.javaScriptCanOpenWindowsAutomatically = true
+                webView.loadUrl(topupResult.checkoutUrl)
+                webView
             },
             modifier = Modifier.fillMaxSize()
         )
