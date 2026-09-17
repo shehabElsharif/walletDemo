@@ -24,14 +24,7 @@ Android App  ←──WebSocket/REST──→  FastAPI Backend  ←──REST/We
 
 ## Quick Start
 
-### 1. Start Payment Platform
-
-```bash
-cd ../paymentPlatform-v2
-docker compose up -d
-```
-
-### 2. Start Backend
+### 1. Start Backend
 
 ```bash
 cd backend
@@ -42,7 +35,7 @@ cp .env.example .env
 .venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-### 3. Open Android App
+### 2. Open Android App
 
 Open `android/` in Android Studio, build and run on emulator or device.
 
