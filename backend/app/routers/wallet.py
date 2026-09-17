@@ -70,8 +70,8 @@ async def topup(
     msg = ""
     if status == "initiated" and body.gateway in ("sadad", "edfali"):
         msg = "OTP sent to your phone"
-        if body.gateway == "edfali":
-            msg += " (use OTP: 1234)"
+        if body.gateway == "edfali" and body.gateway_env != "prod":
+            msg += " (test: enter 1234)"
 
     return TopupResponse(
         transaction_id=result["transactionId"],

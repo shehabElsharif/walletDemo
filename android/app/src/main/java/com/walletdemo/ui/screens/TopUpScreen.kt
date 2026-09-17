@@ -136,7 +136,10 @@ fun TopUpScreen(
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = if (isProd) "OTP sent to your phone. Enter the real code." else "OTP sent to your phone. Use 1234 for mock.",
+                text = when {
+                    gateway == "edfali" && !isProd -> "Test mode: enter 1234."
+                    else -> "Enter the OTP sent to your phone."
+                },
                 style = MaterialTheme.typography.bodyMedium
             )
             Spacer(modifier = Modifier.height(16.dp))
