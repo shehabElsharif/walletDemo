@@ -39,13 +39,15 @@ cp .env.example .env
 
 Open `android/` in Android Studio, build and run on emulator or device.
 
-**Emulator note:** The app connects to `10.0.2.2:8000` (Android emulator's alias for host machine).
+**Backend Server URL Configuration:**
 
-**Real device:** Change the base URL in `ApiClient.kt` to your server's IP:
-```kotlin
-// Change this to your backend server address
-private var baseUrl: String = "http://YOUR_SERVER_IP:8000"
+By default, the app uses `http://10.0.2.2:8000` (Android emulator's alias for the host machine).
+
+To test on a **physical device** or a remote server, update `BACKEND_URL` in `android/gradle.properties`:
+```properties
+BACKEND_URL=http://YOUR_SERVER_IP:8000
 ```
+
 
 ## Configuration
 
