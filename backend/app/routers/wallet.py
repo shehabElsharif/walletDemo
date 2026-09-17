@@ -67,7 +67,11 @@ async def topup(
 
     checkout_url = result.get("checkoutUrl")
     status = result.get("status", "initiated")
-    msg = "OTP sent to your phone" if status == "initiated" and body.gateway in ("sadad", "edfali") else ""
+    msg = ""
+    if status == "initiated" and body.gateway in ("sadad", "edfali"):
+        msg = "OTP sent to your phone"
+        if body.gateway == "edfali":
+            msg += " (use OTP: 1234)"
 
     return TopupResponse(
         transaction_id=result["transactionId"],
@@ -83,6 +87,19 @@ async def confirm_topup(
     user_id: int = Depends(require_user),
     db: AsyncSession = Depends(get_db),
 ):
+    # Ownership check: verify this transaction belongs to the requesting user
+    from sqlalchemy import select
+    from app.models import TopupRequest as TopupRequestModel
+    result_check = await db.execute(
+        select(TopupRequestModel).where(
+            TopupRequestModel.transaction_id == body.transaction_id,
+            TopupRequestModel.user_id == user_id,
+        )
+    )
+    topup_req = result_check.scalar_one_or_none()
+    if not topup_req:
+        raise HTTPException(status_code=404, detail="Transaction not found")
+
     try:
         result = await payment_client.confirm_transaction(
             api_key=settings.platform_api_key,
@@ -98,8 +115,17 @@ async def confirm_topup(
 
     status = result.get("status", "failed")
     if status == "success":
-        await wallet_service.update_topup_status(db, body.transaction_id, "completed")
-        await db.commit()
+        # Credit wallet immediately instead of waiting for webhook
+        credited = await wallet_service.credit_wallet_once(db, user_id, topup_req.amount_minor, body.transaction_id)
+        if credited:
+            await wallet_service.update_topup_status(db, body.transaction_id, "completed")
+            await db.commit()
+            wallet = await wallet_service.get_wallet(db, user_id)
+            await manager.send_balance(user_id, wallet.balance_minor)
+        else:
+            await wallet_service.update_topup_status(db, body.transaction_id, "completed")
+            await db.commit()
+            wallet = await wallet_service.get_wallet(db, user_id)
     else:
         gateway_msg = result.get("gatewayMessage") or result.get("message") or "OTP confirmation failed"
         await wallet_service.update_topup_status(db, body.transaction_id, "failed")

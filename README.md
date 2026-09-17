@@ -58,7 +58,7 @@ private var baseUrl: String = "http://YOUR_SERVER_IP:8000"
 
 Backend environment (`.env` file in `backend/` — copy from `.env.example`):
 ```env
-PLATFORM_URL=http://127.0.0.1:8081
+PLATFORM_URL=https://paymentgateway.alrad-alsarea.ly
 PLATFORM_API_KEY=pk_live_...        # Provided by platform admin
 WEBHOOK_SECRET=your-webhook-secret  # Provided by platform admin
 JWT_SECRET=your-jwt-secret

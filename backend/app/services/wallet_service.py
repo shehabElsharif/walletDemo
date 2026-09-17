@@ -1,6 +1,6 @@
 import logging
 
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import TopupRequest, Wallet
@@ -24,15 +24,25 @@ async def credit_wallet(db: AsyncSession, user_id: int, amount_minor: int, ref: 
 
 
 async def credit_wallet_once(db: AsyncSession, user_id: int, amount_minor: int, transaction_id: str) -> Wallet | None:
+    # Atomic UPDATE: only one caller can flip 'pending' → 'credited'.
+    # On PostgreSQL this serializes via row-level locking; on SQLite via
+    # the single-writer model. Either way, rowcount==0 means someone else
+    # already claimed it.
     result = await db.execute(
-        select(TopupRequest).where(TopupRequest.transaction_id == transaction_id)
+        update(TopupRequest)
+        .where(
+            TopupRequest.transaction_id == transaction_id,
+            TopupRequest.status == "pending",
+        )
+        .values(status="credited")
     )
-    req = result.scalar_one_or_none()
-    if req and req.status == "credited":
-        return None  # already credited
-    if req:
-        req.status = "credited"
-    return await credit_wallet(db, user_id, amount_minor, transaction_id)
+    if result.rowcount == 0:
+        return None  # already credited, completed, or not found
+
+    wallet = await get_wallet(db, user_id)
+    wallet.balance_minor += amount_minor
+    log.info("wallet credited", extra={"user_id": user_id, "amount_minor": amount_minor, "ref": transaction_id})
+    return wallet
 
 
 async def create_topup_request(
